@@ -1,0 +1,23 @@
+Method: POST
+URL: localhost/ingenious/api/createOrUpdate
+PARAM:
+name:Amit12
+email:Am11it1@mori.com
+phone:80000369591
+gender:male // male, female
+education:M.com
+hobby:cricket-reading
+picture: // select file
+exprience:12
+message:hello bro12
+==========
+
+Method: GET
+URL: localhost/ingenious/api/getAllUser
+
+====================
+
+Method: POST
+URL: localhost/ingenious/api/getUserByEmail
+PARAM:
+email:Amit1@mori.com
