@@ -11,6 +11,10 @@
             width: 100px;
             height: 100px;
         }
+
+        .img-hide {
+            display: none;
+        }
     </style>
 </head>
 
@@ -65,7 +69,7 @@
                             <div class="form-group">
                                 <label for="picture">Picture</label>
                                 <input type="file" name="picture" id="picture" class="form-control">
-                                <img src="" id="preview">
+                                <img src="" id="preview" class="image img-hide">
                             </div><br>
                             <div class="form-group">
                                 <label for="exprience">Exprience</label>
@@ -141,7 +145,7 @@
                     'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                 },
                 success: function(dataResult) {
-                    setUsersToTable(dataResult); 
+                    setUsersToTable(dataResult);
                 }
             });
         }
@@ -182,6 +186,7 @@
             if (event.target.files.length == 0) {
                 return 0;
             }
+            $('.img-hide').css("display", "block");
             var tempURL = URL.createObjectURL(event.target.files[0]);
             preview.attr('src', tempURL);
         });
