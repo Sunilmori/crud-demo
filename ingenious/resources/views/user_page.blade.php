@@ -6,7 +6,12 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.0.1/css/bootstrap.min.css">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-
+    <style>
+        .image {
+            width: 100px;
+            height: 100px;
+        }
+    </style>
 </head>
 
 <body>
@@ -90,7 +95,7 @@
                     </div>
                     <div class="card-body">
 
-                        <table class="table mt-3">
+                        <table class="table mt-3" id="users-table">
                             <thead>
                                 <tr>
                                     <th>ID</th>
@@ -107,30 +112,7 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                <?php $i = 1; ?>
-                                @foreach($users as $user)
-                                <tr>
-                                    <td>{{ $user->id }}</td>
-                                    <td>{{ $user->name }}</td>
-                                    <td>{{ $user->email }}</td>
-                                    <td>{{ $user->phone }}</td>
-                                    <td>{{ $user->gender }}</td>
-                                    <td>{{ $user->education }}</td>
-                                    <td>{{ $user->hobby }}</td>
-                                    <td>{{ $user->exprience }}</td>
-                                    <td><img src="{{asset('storage/app/public/images/'.$user->picture)}}"></td>
-                                    <td>{{ $user->message }}</td>
-                                    <td>
-                                        <button type="button" class="btn btn-primary editUser" data-toggle="modal" data-target="#editModal" data-id="{{ $user->id }}" data-name="{{ $user->name }}" onclick="addDataForEdit(this)" data-email="{{ $user->email }}" data-phone="{{ $user->phone }}">
-                                            Edit
-                                        </button>
-                                        <button type="button" class="btn btn-danger deleteUser" onclick="deleteUser(this)" data-id="{{ $user->id }}">
-                                            Delete
-                                        </button>
-                                    </td>
-                                </tr>
-                                <?php $i++; ?>
-                                @endforeach
+
                             </tbody>
                         </table>
 
@@ -140,7 +122,6 @@
         </div>
     </div>
 
-    <!-- <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script> -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.0.1/js/bootstrap.min.js"></script>
     <script>
         function deleteUser(element) {
@@ -160,13 +141,7 @@
                     'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                 },
                 success: function(dataResult) {
-                    dataResult = JSON.parse(dataResult);
-                    if (dataResult.statusCode) {
-                        alert("User deleted successfully");
-                    } else {
-                        alert("Internal Server Error");
-                    }
-
+                    setUsersToTable(dataResult); 
                 }
             });
         }
@@ -237,9 +212,8 @@
                     processData: false,
                     success: function(response) {
                         if (response) {
-                            alert('Success.');
-                            $('#form')[0].reset();
-                            window.location.reload();
+
+                            setUsersToTable(response);
                         }
                     },
                     error: function(error) {
@@ -250,31 +224,54 @@
             });
         });
 
+        function setUsersToTable(users) {
+            // console.log(users);
 
+            $('#form')[0].reset();
+            $('#preview').attr('src', '');
 
-        // $(document).ready(function() {
+            var tableBody = $('#users-table tbody');
+            tableBody.empty();
 
-        //     $(document).on("click", ".editUser", function() {
-        //         var id = $(this).data('id');
-        //         $.ajax({
-        //             url: '/users/' + id,
-        //             type: "POST",
-        //             cache: false,
-        //             data: {
-        //                 id: id
-        //             },
-        //             success: function(dataResult) {
-        //                 dataResult = JSON.parse(dataResult);
-        //                 if (dataResult.statusCode) {
-        //                     window.location = "/userData";
-        //                 } else {
-        //                     alert("Internal Server Error");
-        //                 }
+            for (var i = 0; i < users.length; i++) {
+                console.log(users.name);
+                false;
+                var user = users[i];
+                var row = $('<tr>');
+                row.append($('<td>').text(user.id));
+                row.append($('<td>').text(user.name));
+                row.append($('<td>').text(user.email));
+                row.append($('<td>').text(user.phone));
+                row.append($('<td>').text(user.gender));
+                row.append($('<td>').text(user.education));
+                row.append($('<td>').text(user.hobby));
+                row.append($('<td>').text(user.exprience));
+                row.append($('<td>').html('<img src="' + user.picture + '" class="image">'));
+                row.append($('<td>').text(user.message));
 
-        //             }
-        //         });
-        //     });
-        // });
+                row.append($('<td>').html('<button type="button" class="btn btn-primary editUser" data-toggle="modal" data-target="#editModal" data-id="' + user.id + '" onclick="addDataForEdit(this)"> Edit </button>'));
+
+                row.append($('<td>').html('<button type="button" class="btn btn-danger deleteUser" onclick="deleteUser(this)" data-id="' + user.id + '"> Delete </button>'));
+
+                // Add more table cells for additional user data
+
+                tableBody.append(row);
+            }
+
+        }
+
+        $(document).ready(function() {
+            $.ajax({
+                url: "http://localhost/ingenious/api/getAllUser",
+                type: 'GET',
+                dataType: 'json',
+                success: function(response) {
+
+                    setUsersToTable(response);
+                },
+                error: function(xhr, status, error) {}
+            });
+        });
     </script>
 </body>
 

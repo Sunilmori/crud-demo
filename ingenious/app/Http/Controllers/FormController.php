@@ -29,7 +29,9 @@ class FormController extends Controller
             'exprience' => 'required',
             'messag' => 'required',
         ]);
-        if (!empty($request->file('picture')) && $request->id == null) {
+
+
+        if ((!empty($request->file('picture')) && $request->id == null) || (!empty($request->file('picture')) && $request->id != null)) {
             $image = $request->file('picture');
             $imageName = uniqid() . '.' . $image->getClientOriginalExtension();
             Storage::disk('public')->putFileAs('images', $image, $imageName);
@@ -39,23 +41,40 @@ class FormController extends Controller
 
         Users::updateOrCreate(
             ['id' => $request->id],
-            ['name' => $validatedData['name'],
-            'email' => $validatedData['email'],
-            'phone' => $validatedData['phone'],
-            'gender' => $validatedData['gender'],
-            'education' => $validatedData['education'],
-            'hobby' => implode('-', $validatedData['hobby']),
-            'exprience' => $validatedData['exprience'],
-            'picture' => $imageName,
-            'message' => $validatedData['messag']]
+            [
+                'name' => $validatedData['name'],
+                'email' => $validatedData['email'],
+                'phone' => $validatedData['phone'],
+                'gender' => $validatedData['gender'],
+                'education' => $validatedData['education'],
+                'hobby' => implode('-', $validatedData['hobby']),
+                'exprience' => $validatedData['exprience'],
+                'picture' => $imageName,
+                'message' => $validatedData['messag']
+            ]
         );
+        $users = $this->getDataList();
 
-        return response()->json(['message' => 'User created successfully']);
+        return response()->json($users);
     }
 
     public function deleteRecord(Request $request)
     {
         $this->userService->deletyeById($request->id);
-        return response()->json(['message' => 'User deleted successfully']);
+        $users = $this->getDataList();
+
+        return response()->json($users);
+    }
+
+    public function getDataList()
+    {
+        $users = Users::all();
+        foreach ($users as $user) {
+            $user = $user;
+            $user->picture = asset('storage/app/public/images/' . $user->picture);
+
+            $users[] = $user;
+        }
+        return $users;
     }
 }

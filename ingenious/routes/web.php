@@ -18,11 +18,18 @@ use Illuminate\Support\Facades\Route;
 
 Route::post('/store', [FormController::class, 'storeOrUpdate'])->name('store');
 Route::delete('/delete-record', [FormController::class, 'deleteRecord'])->name('deleteRecord');
+// Route::get('/users_page', [FormController::class, 'getDataList'])->name('getRecord');
+
+
+// Route::get('/users_page', function () {
+//     $users = Users::all();
+ 
+//     return view('user_page', [
+//         'users' => $users
+//     ]);
+// });
+
 
 Route::get('/users_page', function () {
-    $users = Users::all();
- 
-    return view('user_page', [
-        'users' => $users
-    ]);
-});
+        return view('user_page');
+    });

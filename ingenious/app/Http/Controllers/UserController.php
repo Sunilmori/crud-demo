@@ -16,6 +16,27 @@ class UserController extends Controller
 
     public function createOrUpdate(Request $request)
     {
+
+        $validator = \Illuminate\Support\Facades\Validator::make($request->all(), [
+            'name' => 'required|alpha|max:255',
+            'email' => 'required|email',
+            'phone' => 'required|numeric',
+            'gender' => 'required',
+            'education' => 'required',
+            'hobby' => 'required',
+            'exprience' => 'required',
+            'message' => 'required',
+        ]);
+        
+        if ($validator->fails()) {
+            $errorMessages = $validator->errors()->all();
+            return response()->json([
+                'success' => false,
+                'code' => 422,
+                'errors' => $errorMessages
+            ], 422);
+        }
+
         $checkEmail = $this->userService->UserByEmail($request->email)?->email ?? '';
 
         if (empty($checkEmail)) {
@@ -83,8 +104,11 @@ class UserController extends Controller
     public function getUserByEmail(Request $request)
     {
         $checkuser = $this->userService->UserByEmail($request->email);
-
+        
         if (!empty($checkuser)) {
+            
+            $checkuser->picture = asset('storage/app/public/images/' . $checkuser->picture);
+
             $success = true;
             $msg = 'user data found!.';
             $code = 200;
